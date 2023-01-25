@@ -1,4 +1,5 @@
 const express = require("express");
+const { supabase } = require("./config/supabaseClient");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
@@ -6,6 +7,7 @@ require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 
 const { default: mongoose } = require("mongoose");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -26,30 +28,7 @@ app.use(express.json());
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
-
-app.get("/upload", async (req, res) => {
-  try {
-    console.log("Inside get upload");
-    const allFiles = await File.find({});
-    console.log("Files fetched successfully");
-    res.json(allFiles);
-  } catch (err) {
-    console.log("Error occurred while fetching the files");
-    console.error(err.message);
-  }
-});
-
-app.post("/upload", async (req, res) => {
-  try {
-    console.log("Inside upload");
-    console.log(req.body);
-    const newFile = await File.insertMany([req.body]);
-    console.log("File uploaded successfully");
-  } catch (err) {
-    console.log("Error occurred while uploading the file");
-    console.error(err.message);
-  }
-});
+app.use("/api/uploads", uploadRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

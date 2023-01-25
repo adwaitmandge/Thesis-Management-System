@@ -17,14 +17,15 @@ const userSchema = new mongoose.Schema(
     registrationId: {
       type: String,
     },
-    role: {
-      type: String,
-    },
     education: {
       type: String,
     },
     fieldOfInterest: {
       type: String,
+    },
+    role: {
+      type: String,
+      enum: ["Professor", "Student"],
     },
     pic: {
       type: String,

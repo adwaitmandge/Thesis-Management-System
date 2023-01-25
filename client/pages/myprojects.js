@@ -37,27 +37,24 @@ const uploads = () => {
   };
 
   const downloadFiles = async (fileName) => {
-    console.log("Inside download files");
-
-    const { data, error } = await supabase.storage
-      .from("thesis")
-      .download(`public/${fileName}`);
-  };
-
-  const getFiles = async (req, res) => {
     try {
-      const res = await fetch("http://localhost:5000/upload", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      console.log("Inside download files at the frontend");
+      console.log("About to send a get request");
 
+      const res = await fetch(
+        `http://localhost:5000/api/uploads?fileName=${fileName}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      console.log("After the req");
       const data = await res.json();
-      setUploadedFiles(data);
       console.log(data);
-      console.log("inside get files at frontend");
-      console.log(uploadedFiles);
-    } catch (err) {
-      console.error(err.message);
+    } catch (error) {
+      console.log("ERROR OCCURRED WHILE FETCHING FILES");
+      console.log(error);
     }
   };
 
@@ -75,7 +72,6 @@ const uploads = () => {
   };
 
   useEffect(() => {
-    getFiles();
     getFromBucket();
   }, []);
 
