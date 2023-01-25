@@ -15,10 +15,10 @@ router.get("/", async (req, res) => {
 
   const blob = data;
   const buffer = Buffer.from(await blob.arrayBuffer());
-  await fs.promises.writeFile(fileName, buffer);
+  fs.promises.writeFile(fileName, buffer);
 
   console.log("File has been parsed");
-  res.json("SUCCESS!");
+  res.json("SUCCESS");
 });
 
 module.exports = router;

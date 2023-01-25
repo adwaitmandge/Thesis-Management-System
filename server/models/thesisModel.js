@@ -1,4 +1,3 @@
-const { throws } = require("assert");
 const mongoose = require("mongoose");
 
 const thesisSchema = new mongoose.Schema(
@@ -16,6 +15,9 @@ const thesisSchema = new mongoose.Schema(
       ref: "User",
     },
     pending: Boolean,
+    path: {
+      type: String,
+    },
   },
   {
     timestamps: true,

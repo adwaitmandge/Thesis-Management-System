@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "Email is required"],
+      unique: true,
     },
     registrationId: {
       type: String,
@@ -33,6 +34,21 @@ const userSchema = new mongoose.Schema(
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
+    students: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
+    professor: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
+    goals: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
   },
   {
     timestamps: true,

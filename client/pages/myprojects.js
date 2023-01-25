@@ -1,11 +1,13 @@
 import { supabase } from "../config/supabaseClient";
 import react, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useToast } from "@chakra-ui/react";
 
 const uploads = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [bucketData, setBucketData] = useState([]);
   const router = useRouter();
+  const toast = useToast();
 
   const handleUpload = async (e) => {
     let file;
@@ -19,18 +21,6 @@ const uploads = () => {
 
     if (data) {
       console.log(data);
-
-      const res = await fetch("http://localhost:5000/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      const jsonRes = await res.json();
-      console.log("positve response returned");
-
-      console.log("jsonRes", jsonRes);
-      console.log(uploadedFiles);
     } else if (error) {
       console.log(error);
     }
@@ -50,8 +40,18 @@ const uploads = () => {
       );
 
       console.log("After the req");
+      console.log(res);
+
       const data = await res.json();
+
       console.log(data);
+      toast({
+        title: "File Downloaded",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
     } catch (error) {
       console.log("ERROR OCCURRED WHILE FETCHING FILES");
       console.log(error);
