@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const Goal = require("./goalModel");
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -75,6 +76,15 @@ userSchema.pre("save", async function (next) {
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+});
+
+userSchema.post("findOneAndDelete", async (data) => {
+  console.log("Post middleware");
+  if (data.goals.length) {
+    const res = await Goal.deleteMany({ _id: { $in: data.goals } });
+    console.log(res);
+  }
+  console.log("All goals deleted");
 });
 
 const User = new mongoose.model("User", userSchema);

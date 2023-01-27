@@ -38,4 +38,8 @@ const addGoal = async () => {
   await student.save();
 };
 
-addGoal();
+const deleteUser = async () => {
+  const user = await User.findOneAndDelete({ name: "Om Doiphode" });
+};
+
+deleteUser();

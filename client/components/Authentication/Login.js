@@ -7,7 +7,6 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
-
 const Login = () => {
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
