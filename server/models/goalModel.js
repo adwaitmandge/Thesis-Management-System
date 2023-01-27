@@ -11,16 +11,16 @@ const goalSchema = new mongoose.Schema(
       ref: "User",
     },
     assigned_to: [
-      {
+      { 
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-    deadline: {
-      type: Date,
-    },
     isCompleted: {
       type: Boolean,
+    },
+    deadline: {
+      type: Date,
     },
   },
   {

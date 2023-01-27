@@ -24,7 +24,7 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                       <span className="text-[#999] rounded-[50%] w-[26px] h-[26px] flex text-center text-[18px] mr-[8px] justify-center items-center ">
                         {index + 1}
                       </span>
-                      <span className="flex">{task.title}</span>
+                      <span className="flex">{task.task}</span>
                     </div>
                   </div>
                   <div className="absolute top-[50%] -translate-y-[50%] ... right-[15px] inline-block">

@@ -59,7 +59,7 @@ const SideDrawer = () => {
   } = ChatState();
   const router = useRouter();
   const toast = useToast();
-  
+
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     router.push("/");
@@ -154,15 +154,15 @@ const SideDrawer = () => {
           </Button>
         </Tooltip>
         <Text fontSize="2xl" className="font-sans">
-        <a href="/dashboard">Discussion Forum</a>
+          <a href="/dashboard">Discussion Forum</a>
         </Text>
         <div>
           <Menu>
             <MenuButton p={1}>
-            <NotificationBadge
-              count={notification.length}
-              effect={Effect.SCALE}
-            />
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon className="text-[2xl] m-[1]" />
             </MenuButton>
             <MenuList pl={2}>

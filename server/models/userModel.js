@@ -37,21 +37,25 @@ const userSchema = new mongoose.Schema(
     thesis: [
       {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "Thesis",
       },
     ],
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     professor: [
       {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     goals: [
       {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "Goal",
       },
     ],
   },

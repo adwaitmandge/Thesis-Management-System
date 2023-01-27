@@ -20,7 +20,18 @@ const ChatProvider = ({ children }) => {
   }, [router]);
 
   return (
-    <ChatContext.Provider value={{ user, setUser, selectedChat, setSelectedChat, chats, setChats, notification, setNotification }}>
+    <ChatContext.Provider
+      value={{
+        user,
+        setUser,
+        selectedChat,
+        setSelectedChat,
+        chats,
+        setChats,
+        notification,
+        setNotification,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );

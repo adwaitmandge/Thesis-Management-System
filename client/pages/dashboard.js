@@ -1,15 +1,23 @@
 import dynamic from "next/dynamic";
 // import Table from "../components/table";
-import homeStyles from "../styles/Home.module.css";
-import ProgressBar from "../components/progress-bar";
-import LinearWithValueLabel from "../components/linearprogresswithlabel";
 import Link from "next/link";
-import Todolist from "../components/Todolist";
+import StudentView from "../components/StudentView";
+import { ChatState } from "../Context/ChatProvider";
+import ProfessorView from "../components/ProfessorView";
 
 const Dashboard = () => {
+  const { user } = ChatState();
+
+  if (0) {
+    return (
+      <div className="flex w-[100%]">
+        <ProfessorView />
+      </div>
+    );
+  }
   return (
     <div className="flex w-[100%] ">
-      <Todolist />
+      <StudentView />
     </div>
   );
 };

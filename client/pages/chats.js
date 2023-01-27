@@ -7,6 +7,7 @@ import React, { useState } from "react";
 
 const ChatPage = () => {
   const { user } = ChatState();
+  console.log(user);
   const [fetchAgain, setFetchAgain] = useState(false);
   return (
     <div className="w-[100%] bg-gray-200">

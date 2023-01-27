@@ -3,14 +3,6 @@ import React, { useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
 
 const ProfilePage = () => {
-  //   const student = {
-  //     name: "Siddheshsingh Tanwar",
-  //     email: "siddhesh@134",
-  //     Year: " Second",
-  //     role: "Student",
-  //     _ID: "211070016",
-  //     fieldofIntrest: "Blockchain",
-  //   };
 
   const { user } = ChatState();
 
