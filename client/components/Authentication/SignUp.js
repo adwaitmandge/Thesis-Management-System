@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useToast } from "@chakra-ui/react";
+import { useToast, Stack, Radio, RadioGroup } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
@@ -19,13 +19,13 @@ const SignUp = () => {
   const [password, setPassword] = useState();
   const [pic, setPic] = useState();
   const [registrationId, setRegistrationId] = useState();
-  const [role, setRole] = useState();
+  const [role, setRole] = useState("");
   const [fieldOfInterest, setFieldOfInterest] = useState();
   const [picLoading, setPicLoading] = useState(false);
-
+  
   const submitHandler = async () => {
     setPicLoading(true);
-    if (!name || !email || !password || !confirmpassword) {
+    if (!name || !email || !password || !confirmpassword || !registrationId || !role || !fieldOfInterest) {
       toast({
         title: "Please Fill all the Feilds",
         status: "warning",
@@ -44,8 +44,44 @@ const SignUp = () => {
         isClosable: true,
         position: "bottom",
       });
+      setPicLoading(false);
       return;
     }
+    if(!email.includes("vjti.ac.in")){
+      toast({
+        title: "Enter your institute email ID",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+    if(role.toLowerCase() === "student" && !email.includes("_")){
+      toast({
+        title: "Incorrect Email ID for Student",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+
+    if(role.toLowerCase() === "professor" && email.includes("_")){
+      toast({
+        title: "Incorrect Email ID for Professor",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+    
     console.log(name, email, password, pic);
     try {
       const config = {
@@ -194,11 +230,7 @@ const SignUp = () => {
 
       <FormControl id="role" isRequired>
         <FormLabel>Role</FormLabel>
-        <Input
-          type="text"
-          placeholder="Enter Your Role"
-          onChange={(e) => setRole(e.target.value)}
-        />
+        <Input placeholder="Student | Professor" type="text" onChange={e => setRole(e.target.value)} />
       </FormControl>
 
       <FormControl id="fieldOfInterest" isRequired>
