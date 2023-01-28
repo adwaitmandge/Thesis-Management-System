@@ -23,12 +23,12 @@ const addStudent = async () => {
 
 const addGoal = async () => {
   const professor = await User.findOne({ email: "khedkar@ce.vjti.ac.in" });
-  const student = await User.findOne({ name: "Rohan Fatechandka" });
+  const student = await User.findOne({ name: "Om Doiphode" });
   console.log(professor);
   const newGoal = new Goal({
-    task: "Go to Imagica",
-    isCompleted: true,
-    deadline: new Date("2023-02-4"),
+    task: "Design a circuit board",
+    isCompleted: false,
+    deadline: new Date("2023-02-12"),
   });
   newGoal.creator = professor;
   newGoal.assigned_to.push(student);
@@ -42,4 +42,5 @@ const deleteUser = async () => {
   const user = await User.findOneAndDelete({ name: "Om Doiphode" });
 };
 
-deleteUser();
+// deleteUser();
+addGoal();
