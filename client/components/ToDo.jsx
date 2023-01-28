@@ -1,5 +1,14 @@
 import React from "react";
-
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+} from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleCheck,
@@ -7,8 +16,11 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { tododata } from "../data/tododata";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <>
       {toDo
@@ -37,24 +49,32 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                     <FontAwesomeIcon icon={faCircleCheck} />
                   </button>
 
-                  {task.status ? null : (
-                    <span
-                      className="mr-[20px]"
-                      title="Edit"
-                      onClick={() =>
-                        setUpdateData({
-                          id: task.id,
-                          title: task.title,
-                          status: task.status ? true : false,
-                        })
-                      }
-                    >
-                      <FontAwesomeIcon icon={faPen} />
-                    </span>
-                  )}
+                  <span
+                    className="mr-[20px] cursor-pointer"
+                    title="Edit"
+                    onClick={onOpen}
+                  >
+                    <FontAwesomeIcon icon={faPen} />
+                  </span>
+                  <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Modal Title</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                      </ModalBody>
+
+                      <ModalFooter>
+                        <Button colorScheme="blue" mr={3} onClick={onClose}>
+                          Close
+                        </Button>
+                        <Button variant="ghost">Secondary Action</Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
 
                   <span
-                    className="mr-[20px] "
+                    className="mr-[20px] cursor-pointer "
                     title="Delete"
                     onClick={() => deleteTask(task.id)}
                   >

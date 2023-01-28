@@ -17,7 +17,11 @@ const StudentView = () => {
   const [toDo, setToDo] = useState([]);
   const [count, setcount] = useState(0);
   const [percent, setpercent] = useState(0);
-
+  const [personalProgress, setPersonalProgress] = useState(0);
+  const [assignedTasksProgress, setAssignedTasksProgress] = useState(0);
+  const [personalTasks, setPersonalTasks] = useState([]);
+  const [assignedTasks, setAssignedTasks] = useState([]);
+  const [personalCount, setPersonalCount] = useState(0);
   // Temp State
   const [newTask, setNewTask] = useState({
     task: "",
@@ -27,6 +31,20 @@ const StudentView = () => {
     deadline: "",
   });
   const [updateData, setUpdateData] = useState("");
+
+  const calculateProgress = (tasks) => {
+    let count = 0;
+
+    tasks?.map((task) => {
+      // student is the creator of the task
+      if (task.assigned_to.includes(task.creator)) {
+        if (task.isCompleted) count++;
+      }
+    });
+
+    setPersonalCount(count);
+    setPersonalProgress((count / tasks?.length) * 100);
+  };
 
   const getGoals = async () => {
     try {
@@ -41,6 +59,21 @@ const StudentView = () => {
       const data = await res.json();
       setToDo(data);
       console.log(data);
+
+      const temp1 = [];
+      const temp2 = [];
+      data.map((task) => {
+        if (task.assigned_to.includes(task.creator)) {
+          temp1.push(task);
+        } else {
+          temp2.push(task);
+        }
+      });
+
+      calculateProgress(temp1);
+
+      setPersonalTasks(temp1);
+      setAssignedTasks(temp2);
     } catch (err) {
       console.error(err.message);
     }
@@ -75,7 +108,9 @@ const StudentView = () => {
       const data = await res.json();
       console.log("NEW GOAL ADDED");
       setToDo([...toDo, newTask]);
+      setPersonalTasks([...personalTasks, newTask]);
       setNewTask({ ...newTask, task: "" });
+
       toast({
         title: "New Task Added",
         status: "success",
@@ -90,7 +125,8 @@ const StudentView = () => {
   };
 
   const markDone = async (task) => {
-    // marking an incomplete task as complete
+    const initialState = task.isCompleted;
+
     console.log("INSIDE MARK DONE");
     try {
       console.log("ABOUT TO SEND A PATCH REQUEST");
@@ -101,12 +137,26 @@ const StudentView = () => {
           Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify(task),
-        // marking a complete task as incomplete
       });
       console.log("ABOUT TO SEND A PATCH REQUEST");
       const data = await res.json();
       setToDo(data);
       console.log(data);
+
+      // update the progress bar if the task is marked done
+      let count = 0;
+      data.map((task) => {
+        // student is the creator of the task
+        if (task.assigned_to.includes(task.creator)) {
+          // update the count
+          if (task.isCompleted) {
+            count++;
+          }
+        }
+      });
+
+      setPersonalCount(count);
+      setPersonalProgress((count / personalTasks.length) * 100);
     } catch (err) {
       console.error(err.message);
     }
@@ -114,6 +164,7 @@ const StudentView = () => {
 
   useEffect(() => {
     getGoals();
+    calculateProgress();
   }, []);
 
   // Add task
@@ -185,10 +236,6 @@ const StudentView = () => {
     setToDo(updatedObject);
     setUpdateData("");
   };
-  console.log("this is count ", count);
-  console.log("todo length ", toDo.length);
-  console.log("the percentage is ", percent);
-  console.log("this is percentage ", (count / (toDo.length - count)) * 100);
   // setpercent((count / toDo.length) * 100);
 
   return (
@@ -198,11 +245,14 @@ const StudentView = () => {
           <div className="bg-gray-200">
             <div className=" p-6 flex flex-col md:space-y-[2%]">
               <span>Personal Progress</span>
-              <LinearProgress variant="determinate" value={percent} />
+              <LinearProgress variant="determinate" value={personalProgress} />
             </div>
             <div className="p-6 flex flex-col md:space-y-[2%]">
               <span>Assignment Progress</span>
-              <LinearProgress variant="determinate" value={percent} />
+              <LinearProgress
+                variant="determinate"
+                value={assignedTasksProgress}
+              />
             </div>
           </div>
         </div>
@@ -210,7 +260,7 @@ const StudentView = () => {
           <div className="container text-center ">
             <br />
             <br />
-            <h2 className="w">To Do List</h2>
+            <h2 className="w">Tasks</h2>
             <br />
             <br />
 

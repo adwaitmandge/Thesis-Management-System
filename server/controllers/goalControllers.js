@@ -6,7 +6,9 @@ const asyncHandler = require("express-async-handler");
 const getGoals = asyncHandler(async (req, res) => {
   try {
     console.log("req.user is ", req.user);
-    const user = await User.findById(req.user._id).populate("goals");
+    const user = await User.findById(req.user._id)
+      .populate("goals")
+      .sort({ deadline: 1 });
     res.json(user.goals);
   } catch (error) {
     console.log("Error occurred while fetching goals at the backend");
