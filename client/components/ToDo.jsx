@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -19,9 +19,10 @@ import { tododata } from "../data/tododata";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { ChatState } from "../Context/ChatProvider";
 import { ButtonGroup } from "@mui/material";
+import DeleteModal from "./miscellaneous/DeleteModal";
 
 const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [showModal, setShowModal] = useState(false);
   const { user } = ChatState();
   console.log(user);
   console.log(toDo);
@@ -58,7 +59,6 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                     <span
                       className={`mr-[20px] cursor-pointer`}
                       title="Edit"
-                      onClick={onOpen}
                     >
                       <FontAwesomeIcon icon={faPen} />
                     </span>
@@ -68,13 +68,19 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                     <Button
                       className={`mr-[20px] cursor-pointer `}
                       title="Delete"
-                      onClick={() => deleteTask(task)}
+                      onClick={() => setShowModal(true)}
                     >
                       <FontAwesomeIcon icon={faTrashCan} />
                     </Button>
                   )}
                 </div>
               </div>
+              <DeleteModal
+                isVisible={showModal}
+                onClose={() => setShowModal(false)}
+                deleteTask={deleteTask}
+                task={task}
+              />
             </React.Fragment>
           );
         })}
