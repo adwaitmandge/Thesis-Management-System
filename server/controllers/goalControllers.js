@@ -24,8 +24,6 @@ const createGoal = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const newGoal = new Goal(req.body);
-    newGoal.creator = user;
-    newGoal.assigned_to = user;
     user.goals.push(newGoal);
     await newGoal.save();
     await user.save();
@@ -50,5 +48,18 @@ const completeGoal = asyncHandler(async (req, res) => {
 
 const updateGoal = asyncHandler(async (req, res) => {});
 
-const deleteGoal = asyncHandler(async (req, res) => {});
+const deleteGoal = asyncHandler(async (req, res) => {
+  console.log("INSIDE DELETE GOALS AT THE BACKEND");
+  console.log(req.body);
+  const { _id } = req.body;
+  console.log("About to remove the goal");
+  const removedGoal = await Goal.findByIdAndDelete(_id);
+  console.log("Goal removed");
+  console.log("The remove goal is ", removedGoal);
+  const foundUser = await User.findById(req.user._id).populate('goals');
+  foundUser.goals.filter((goal) => goal._id !== _id);
+  await foundUser.save();
+  console.log("Goal deleted");
+  res.json(foundUser.goals)
+});
 module.exports = { getGoals, createGoal, deleteGoal, completeGoal, updateGoal };

@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ChatState } from "../Context/ChatProvider";
 import AddTaskModal from "./miscellaneous/AddTaskModal";
 import { useRouter } from "next/router";
+import { calcLength } from "framer-motion";
 
 const StudentView = () => {
   const { user } = ChatState();
@@ -26,13 +27,13 @@ const StudentView = () => {
   const [newTask, setNewTask] = useState({
     task: "",
     creator: {},
-    assigned_to: {},
+    assigned_to: [],
     isCompleted: false,
     deadline: "",
   });
   const [updateData, setUpdateData] = useState("");
 
-  const calculateProgress = (tasks) => {
+  const calculatePersonalProgress = (tasks) => {
     let count = 0;
 
     tasks?.map((task) => {
@@ -44,6 +45,20 @@ const StudentView = () => {
 
     setPersonalCount(count);
     setPersonalProgress((count / tasks?.length) * 100);
+  };
+
+  const calculateAssignedProgress = (tasks) => {
+    let count = 0;
+
+    tasks?.map((task) => {
+      // professor is the creator of the task
+      if (task.assigned_to.includes(task.creator)) {
+      } else {
+        if (task.isCompleted) count++;
+      }
+    });
+
+    setAssignedTasksProgress((count / tasks.length) * 100);
   };
 
   const getGoals = async () => {
@@ -70,7 +85,9 @@ const StudentView = () => {
         }
       });
 
-      calculateProgress(temp1);
+      console.log(temp2);
+      calculatePersonalProgress(temp1);
+      calculateAssignedProgress(temp2);
 
       setPersonalTasks(temp1);
       setAssignedTasks(temp2);
@@ -91,6 +108,8 @@ const StudentView = () => {
       console.log("Task is empty ");
       return;
     }
+    newTask.assigned_to.push(user._id);
+    newTask.creator = user._id;
     console.log(newTask);
     const num = Math.floor(Math.random() * 25) + 1;
     newTask.deadline = `2023-02-${num}`;
@@ -106,10 +125,14 @@ const StudentView = () => {
       });
 
       const data = await res.json();
+      const temp = [...toDo, data];
+      
       console.log("NEW GOAL ADDED");
-      setToDo([...toDo, newTask]);
-      setPersonalTasks([...personalTasks, newTask]);
+      setToDo([...toDo, data]);
+      setPersonalTasks([...personalTasks, data]);
       setNewTask({ ...newTask, task: "" });
+
+      calculatePersonalProgress(temp);
 
       toast({
         title: "New Task Added",
@@ -125,8 +148,6 @@ const StudentView = () => {
   };
 
   const markDone = async (task) => {
-    const initialState = task.isCompleted;
-
     console.log("INSIDE MARK DONE");
     try {
       console.log("ABOUT TO SEND A PATCH REQUEST");
@@ -143,73 +164,77 @@ const StudentView = () => {
       setToDo(data);
       console.log(data);
 
-      // update the progress bar if the task is marked done
-      let count = 0;
+      // update the personal progress bar if the task is marked done
+      let count1 = 0;
+      let count2 = 0;
+
       data.map((task) => {
         // student is the creator of the task
         if (task.assigned_to.includes(task.creator)) {
           // update the count
           if (task.isCompleted) {
-            count++;
+            count1++;
+          }
+        } else {
+          if (task.isCompleted) {
+            count2++;
           }
         }
       });
 
-      setPersonalCount(count);
-      setPersonalProgress((count / personalTasks.length) * 100);
+      console.log((count2 / assignedTasks.length) * 100);
+      setPersonalProgress((count1 / personalTasks.length) * 100);
+      setAssignedTasksProgress((count2 / assignedTasks.length) * 100);
     } catch (err) {
       console.error(err.message);
     }
   };
 
+  const deleteTask = async (task) => {
+    const newTasks = personalTasks.filter(
+      (someTask) => someTask._id != task._id
+    );
+    setPersonalTasks(newTasks);
+
+    try {
+      console.log("About to send a delete request");
+      const res = await fetch("http://localhost:5000/api/dashboard/goals", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(task),
+      });
+
+      const data = await res.json();
+      setToDo(data);
+
+      const temp1 = [];
+      const temp2 = [];
+      data.map((task) => {
+        if (task.assigned_to.includes(task.creator)) {
+          temp1.push(task);
+        } else {
+          temp2.push(task);
+        }
+      });
+
+      console.log(temp2);
+      calculatePersonalProgress(temp1);
+      calculateAssignedProgress(temp2);
+
+      setPersonalTasks(temp1);
+      setAssignedTasks(temp2);
+    } catch (error) {
+      console.log("ERROR OCCURRED WHILE DELETING GOALS");
+      console.log(error.message);
+    }
+  };
+
   useEffect(() => {
     getGoals();
-    calculateProgress();
   }, []);
-
-  // Add task
-  ///////////////////////////
-  // const addTask = () => {
-  //   if (newTask) {
-  //     let num = toDo.length + 1;
-  //     let newEntry = { id: num, title: newTask, status: false };
-  //     setpercent((count / (toDo.length + 1)) * 100);
-  //     setToDo([...toDo, newEntry]);
-  //     setNewTask("");
-  //   }
-  // };
-
-  // Delete task
-  ///////////////////////////
-  // const deleteTask = (id) => {
-  //   const foundTask = toDo.find((task) => task.id === id);
-  //   if (foundTask.complete) {
-  //     let newTasks = toDo.filter((task) => task.id !== id);
-  //     setpercent(((count - 1) / (toDo.length - 1)) * 100);
-  //     setcount(count - 1);
-  //     setToDo(newTasks);
-  //   } else {
-  //     let newTasks = toDo.filter((task) => task.id !== id);
-  //     setpercent((count / (toDo.length - 1)) * 100);
-  //     setToDo(newTasks);
-  //   }
-  // };
-
-  // Mark task as done or completed
-  ///////////////////////////
-  // const markDone = (id) => {
-  //   let newTask = toDo.map((task) => {
-  //     if (task.id === id) {
-  //       task.complete = true;
-  //       setpercent(((count + 1) / toDo.length) * 100);
-  //       setcount(count + 1);
-  //       return { ...task, status: !task.status };
-  //     }
-
-  //     return task;
-  //   });
-  //   setToDo(newTask);
-  // };
 
   // Cancel update
   ///////////////////////////
@@ -307,7 +332,7 @@ const StudentView = () => {
               toDo={toDo}
               markDone={markDone}
               // setUpdateData={setUpdateData}
-              // deleteTask={deleteTask}
+              deleteTask={deleteTask}
             />
           </div>
         </div>

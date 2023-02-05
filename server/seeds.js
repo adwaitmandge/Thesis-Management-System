@@ -42,5 +42,10 @@ const deleteUser = async () => {
   const user = await User.findOneAndDelete({ name: "Om Doiphode" });
 };
 
-// deleteUser();
-addGoal();
+const updateUser = async() => {
+  const user = await User.findOne({name:"Om Doiphode"});
+  user.goals = [];
+  await user.save();
+}
+
+updateUser();
