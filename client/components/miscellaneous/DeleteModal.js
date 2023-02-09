@@ -66,7 +66,7 @@ const DeleteModal = ({ isVisible, onClose, deleteTask, task }) => {
                 onClose();
               }}
             >
-              No, cancel
+              No, close
             </button>
           </div>
         </div>

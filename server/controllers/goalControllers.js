@@ -46,28 +46,21 @@ const completeGoal = asyncHandler(async (req, res) => {
 /////////////////////////////////////// UPDATE EXISTING GOAL ////////////////////////////////
 
 const updateGoal = asyncHandler(async (req, res) => {
-  console.log("INSIDE UPDATE GOALS AT THE BACKEND");
-  console.log("THE REQUEST BODY IS ", req.body);
   const { task, newTitle } = req.body;
   const foundUser = await User.findById(req.user._id);
   const foundGoal = foundUser.goals.find((goal) => goal._id == task._id);
   foundGoal.task = newTitle;
   await foundUser.save();
-  console.log("Goal updated, sending respone to frontend");
   res.json(foundUser.goals);
 });
 
 /////////////////////////////////////// DELETE GOAL ////////////////////////////////
 
 const deleteGoal = asyncHandler(async (req, res) => {
-  console.log("Inside delete goals at the backend");
   const { _id } = req.body;
-  console.log("The id is ", _id);
-  console.log("The request body is", req.body);
   const foundUser = await User.findById(req.user._id);
   const newGoals = foundUser.goals.filter((goal) => goal._id != _id);
   foundUser.goals = newGoals;
-  console.log("Goals after deleting are", foundUser.goals);
   await foundUser.save();
   res.json(foundUser.goals);
 });
