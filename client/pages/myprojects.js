@@ -104,7 +104,7 @@ const uploads = () => {
         <hr />
       </div>
       <div>
-        {bucketData.map((data) => {
+        {bucketData?.map((data) => {
           console.log("Mapping", data.name);
           return (
             <div className="bg-gray-300 w-[100%] m-auto h-[50%] rounded-full mt-[10px] mb-[10px]">
