@@ -20,9 +20,11 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { ChatState } from "../Context/ChatProvider";
 import { ButtonGroup } from "@mui/material";
 import DeleteModal from "./miscellaneous/DeleteModal";
+import UpdateModal from "./miscellaneous/UpdateModal";
 
-const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
-  const [showModal, setShowModal] = useState(false);
+const ToDo = ({ toDo, markDone, updateTask, deleteTask }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { user } = ChatState();
   console.log(user);
   console.log(toDo);
@@ -59,6 +61,7 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                     <span
                       className={`mr-[20px] cursor-pointer`}
                       title="Edit"
+                      onClick={() => setShowUpdateModal(true)}
                     >
                       <FontAwesomeIcon icon={faPen} />
                     </span>
@@ -68,7 +71,7 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                     <Button
                       className={`mr-[20px] cursor-pointer `}
                       title="Delete"
-                      onClick={() => setShowModal(true)}
+                      onClick={() => setShowDeleteModal(true)}
                     >
                       <FontAwesomeIcon icon={faTrashCan} />
                     </Button>
@@ -76,9 +79,16 @@ const ToDo = ({ toDo, markDone, setUpdateData, deleteTask }) => {
                 </div>
               </div>
               <DeleteModal
-                isVisible={showModal}
-                onClose={() => setShowModal(false)}
+                isVisible={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
                 deleteTask={deleteTask}
+                task={task}
+              />
+
+              <UpdateModal
+                isVisible={showUpdateModal}
+                onClose={() => setShowUpdateModal(false)}
+                updateTask={updateTask}
                 task={task}
               />
             </React.Fragment>

@@ -13,7 +13,7 @@ const {
 router.get("/goals", protect, getGoals);
 router.post("/goals", protect, createGoal);
 router.patch("/goals", protect, completeGoal);
-router.patch("/goals", protect, updateGoal)
+router.put("/goals", protect, updateGoal)
 router.delete("/goals", protect, deleteGoal)
 
 module.exports = router;

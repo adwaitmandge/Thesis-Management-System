@@ -55,8 +55,24 @@ const userSchema = new mongoose.Schema(
     ],
     goals: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Goal",
+        task: {
+          type: String,
+          require: true,
+        },
+        creator: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        assigned_to: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        isCompleted: {
+          type: Boolean,
+        },
+        deadline: {
+          type: Date,
+        },
       },
     ],
   },

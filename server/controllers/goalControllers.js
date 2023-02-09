@@ -5,10 +5,7 @@ const asyncHandler = require("express-async-handler");
 // Fetch all goals
 const getGoals = asyncHandler(async (req, res) => {
   try {
-    console.log("req.user is ", req.user);
-    const user = await User.findById(req.user._id)
-      .populate("goals")
-      .sort({ deadline: 1 });
+    const user = await User.findById(req.user._id);
     res.json(user.goals);
   } catch (error) {
     console.log("Error occurred while fetching goals at the backend");
@@ -16,16 +13,15 @@ const getGoals = asyncHandler(async (req, res) => {
   }
 });
 
-// Create a new task
+/////////////////////////////////// CREATE A NEW GOAL //////////////////////////////
+
 const createGoal = asyncHandler(async (req, res) => {
-  console.log("INSIDE THE CREATE GOAL ROUTE");
-  console.log(req.body);
-  console.log("req.user is", req.user);
   try {
     const user = await User.findById(req.user._id);
-    const newGoal = new Goal(req.body);
+    const newGoal = req.body;
+    newGoal.assigned_to = req.user._id;
+    newGoal.creator = req.user._id;
     user.goals.push(newGoal);
-    await newGoal.save();
     await user.save();
     res.json(newGoal);
   } catch (err) {
@@ -33,33 +29,46 @@ const createGoal = asyncHandler(async (req, res) => {
   }
 });
 
+/////////////////////////////////////// MARK AS DONE OR UNDONE ////////////////////////////////
+
 const completeGoal = asyncHandler(async (req, res) => {
-  console.log("Inside complete Goal at the backend");
   const goal = req.body;
-  console.log("The req.body is ");
   console.log(req.body);
-  const foundGoal = await Goal.findOne({ _id: goal._id });
+  const user = await User.findById(req.user._id);
+  const allGoals = user.goals;
+  const foundGoal = allGoals.find((someGoal) => someGoal._id == goal._id);
   foundGoal.isCompleted = !foundGoal.isCompleted;
-  await foundGoal.save();
-  const user = await User.findOne({ _id: req.user._id }).populate("goals");
+  await user.save();
   console.log(user);
   res.json(user.goals);
 });
 
-const updateGoal = asyncHandler(async (req, res) => {});
+/////////////////////////////////////// UPDATE EXISTING GOAL ////////////////////////////////
+
+const updateGoal = asyncHandler(async (req, res) => {
+  console.log("INSIDE UPDATE GOALS AT THE BACKEND");
+  console.log("THE REQUEST BODY IS ", req.body);
+  const { task, newTitle } = req.body;
+  const foundUser = await User.findById(req.user._id);
+  const foundGoal = foundUser.goals.find((goal) => goal._id == task._id);
+  foundGoal.task = newTitle;
+  await foundUser.save();
+  console.log("Goal updated, sending respone to frontend");
+  res.json(foundUser.goals);
+});
+
+/////////////////////////////////////// DELETE GOAL ////////////////////////////////
 
 const deleteGoal = asyncHandler(async (req, res) => {
-  console.log("INSIDE DELETE GOALS AT THE BACKEND");
-  console.log(req.body);
+  console.log("Inside delete goals at the backend");
   const { _id } = req.body;
-  console.log("About to remove the goal");
-  const removedGoal = await Goal.findByIdAndDelete(_id);
-  console.log("Goal removed");
-  console.log("The remove goal is ", removedGoal);
-  const foundUser = await User.findById(req.user._id).populate('goals');
-  foundUser.goals.filter((goal) => goal._id !== _id);
+  console.log("The id is ", _id);
+  console.log("The request body is", req.body);
+  const foundUser = await User.findById(req.user._id);
+  const newGoals = foundUser.goals.filter((goal) => goal._id != _id);
+  foundUser.goals = newGoals;
+  console.log("Goals after deleting are", foundUser.goals);
   await foundUser.save();
-  console.log("Goal deleted");
-  res.json(foundUser.goals)
+  res.json(foundUser.goals);
 });
 module.exports = { getGoals, createGoal, deleteGoal, completeGoal, updateGoal };

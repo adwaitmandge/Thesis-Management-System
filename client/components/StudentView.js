@@ -26,8 +26,6 @@ const StudentView = () => {
   // Temp State
   const [newTask, setNewTask] = useState({
     task: "",
-    creator: {},
-    assigned_to: [],
     isCompleted: false,
     deadline: "",
   });
@@ -96,6 +94,8 @@ const StudentView = () => {
     }
   };
 
+  //////////////////////////////// ADD TASK /////////////////////////////////////////////////////
+
   const addTask = async () => {
     if (!newTask.task) {
       toast({
@@ -108,9 +108,8 @@ const StudentView = () => {
       console.log("Task is empty ");
       return;
     }
-    newTask.assigned_to.push(user._id);
-    newTask.creator = user._id;
-    console.log(newTask);
+    console.log("NEW TASK BEFORE ADDING CREATOR", newTask);
+    console.log("NEW TASK AFTER ADDING CREATOR", newTask);
     const num = Math.floor(Math.random() * 25) + 1;
     newTask.deadline = `2023-02-${num}`;
 
@@ -126,11 +125,15 @@ const StudentView = () => {
 
       const data = await res.json();
       const temp = [...toDo, data];
-      
+
       console.log("NEW GOAL ADDED");
       setToDo([...toDo, data]);
       setPersonalTasks([...personalTasks, data]);
-      setNewTask({ ...newTask, task: "" });
+      setNewTask({
+        task: "",
+        isCompleted: false,
+        deadline: "",
+      });
 
       calculatePersonalProgress(temp);
 
@@ -146,6 +149,58 @@ const StudentView = () => {
       console.log(error);
     }
   };
+
+  //////////////////////////////// UDPATE TASK /////////////////////////////////////////////////////
+  const updateTask = async (task, newTitle) => {
+    console.log(newTitle);
+    if (!newTitle) {
+      toast({
+        title: "Please enter something",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    const body = { task, newTitle };
+
+    try {
+      const res = await fetch("http://localhost:5000/api/dashboard/goals", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      setToDo(data);
+
+      const temp1 = [];
+      const temp2 = [];
+      data.map((task) => {
+        if (task.assigned_to.includes(task.creator)) {
+          temp1.push(task);
+        } else {
+          temp2.push(task);
+        }
+      });
+
+      console.log(temp2);
+      calculatePersonalProgress(temp1);
+      calculateAssignedProgress(temp2);
+
+      setPersonalTasks(temp1);
+      setAssignedTasks(temp2);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  //////////////////////////////// MARK AS DONE OR UNDONE /////////////////////////////////////////////////////
 
   const markDone = async (task) => {
     console.log("INSIDE MARK DONE");
@@ -189,6 +244,8 @@ const StudentView = () => {
       console.error(err.message);
     }
   };
+
+  //////////////////////////////// DELETE TASK /////////////////////////////////////////////////////
 
   const deleteTask = async (task) => {
     const newTasks = personalTasks.filter(
@@ -235,33 +292,6 @@ const StudentView = () => {
   useEffect(() => {
     getGoals();
   }, []);
-
-  // Cancel update
-  ///////////////////////////
-  const cancelUpdate = () => {
-    setUpdateData("");
-  };
-
-  // Change task for update
-  ///////////////////////////
-  // const changeTask = (e) => {
-  //   let newEntry = {
-  //     id: updateData.id,
-  //     title: e.target.value,
-  //     status: updateData.status ? true : false,
-  //   };
-  //   setUpdateData(newEntry);
-  // };
-
-  // Update task
-  ///////////////////////////
-  const updateTask = () => {
-    let filterRecords = [...toDo].filter((task) => task.id !== updateData.id);
-    let updatedObject = [...filterRecords, updateData];
-    setToDo(updatedObject);
-    setUpdateData("");
-  };
-  // setpercent((count / toDo.length) * 100);
 
   return (
     <>
@@ -331,7 +361,7 @@ const StudentView = () => {
             <ToDo
               toDo={toDo}
               markDone={markDone}
-              // setUpdateData={setUpdateData}
+              updateTask={updateTask}
               deleteTask={deleteTask}
             />
           </div>
