@@ -3,6 +3,8 @@ import { useState } from "react";
 const UpdateModal = ({ isVisible, updateTask, onClose, task }) => {
   if (!isVisible) return null;
   const [updateTaskTitle, setUpdateTaskTitle] = useState("");
+  const [updateTaskDate, setUpdateTaskDate] = useState("");
+  const [updateTaskTime, setUpdateTaskTime] = useState("");
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-10 backdrop-blur-sm flex justify-center items-center ">
@@ -60,13 +62,36 @@ const UpdateModal = ({ isVisible, updateTask, onClose, task }) => {
                 onChange={(e) => setUpdateTaskTitle(e.target.value)}
                 required
               />
+              <input
+                type="date"
+                id="first_name"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-3"
+                placeholder={task.deadline.slice(0, 10)}
+                value={updateTaskDate}
+                onChange={(e) => setUpdateTaskDate(e.target.value)}
+                required
+              />
+              <input
+                type="time"
+                id="first_name"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-3"
+                placeholder={task.time}
+                value={updateTaskTime}
+                onChange={(e) => setUpdateTaskTime(e.target.value)}
+                required
+              />
             </div>
             <button
               data-modal-hide="popup-modal"
               type="button"
               class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
               onClick={() => {
-                updateTask(task, updateTaskTitle);
+                updateTask(
+                  task,
+                  updateTaskTitle,
+                  updateTaskDate,
+                  updateTaskTime
+                );
                 onClose();
               }}
             >

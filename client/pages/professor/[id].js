@@ -142,7 +142,7 @@ const StudentView = () => {
   };
 
   //////////////////////////////// UDPATE TASK /////////////////////////////////////////////////////
-  const updateTask = async (task, newTitle) => {
+  const updateTask = async (task, newTitle, date, time) => {
     console.log(newTitle);
     if (!newTitle) {
       toast({
@@ -155,7 +155,7 @@ const StudentView = () => {
       return;
     }
 
-    const body = { task, newTitle, id };
+    const body = { task, newTitle, id, date, time };  
 
     try {
       const res = await fetch("http://localhost:5000/api/professor/", {

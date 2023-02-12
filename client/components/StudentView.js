@@ -23,6 +23,12 @@ const StudentView = () => {
   const [personalTasks, setPersonalTasks] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
   const [personalCount, setPersonalCount] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+
+  const modalHandler = (student) => {
+    setShowModal(true);
+  };
+
   // Temp State
   const [newTask, setNewTask] = useState({
     task: "",
@@ -96,6 +102,58 @@ const StudentView = () => {
 
   //////////////////////////////// ADD TASK /////////////////////////////////////////////////////
 
+  const compare = (a, b) => {
+    if (a.deadline < b.deadline) return -1;
+    if (a.deadline > b.deadline) return 1;
+    return 0;
+  };
+
+  const taskCreationHandler = async (newTask) => {
+    if (!newTask.task) {
+      console.log("Cannot assign an empty task");
+      return;
+    }
+
+    const body = {
+      newTask,
+    };
+
+    console.log(body);
+
+    console.log("Before sending post request");
+    const res = await fetch("http://localhost:5000/api/dashboard/goals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    console.log("After sending post request");
+    const data = await res.json();
+    console.log(data);
+
+    setToDo(data);
+    setShowModal(false);
+    const temp1 = [];
+    const temp2 = [];
+    data.map((task) => {
+      if (task.assigned_to.includes(task.creator)) {
+        temp1.push(task);
+      } else {
+        temp2.push(task);
+      }
+    });
+
+    console.log(temp2);
+    calculatePersonalProgress(temp1);
+    calculateAssignedProgress(temp2);
+
+    setPersonalTasks(temp1);
+    setAssignedTasks(temp2);
+  };
+
   const addTask = async () => {
     if (!newTask.task) {
       toast({
@@ -151,7 +209,7 @@ const StudentView = () => {
   };
 
   //////////////////////////////// UDPATE TASK /////////////////////////////////////////////////////
-  const updateTask = async (task, newTitle) => {
+  const updateTask = async (task, newTitle, date, time) => {
     console.log(newTitle);
     if (!newTitle) {
       toast({
@@ -164,7 +222,7 @@ const StudentView = () => {
       return;
     }
 
-    const body = { task, newTitle };
+    const body = { task, newTitle, date, time };
 
     try {
       const res = await fetch("http://localhost:5000/api/dashboard/goals", {
@@ -332,7 +390,10 @@ const StudentView = () => {
                 />
               </div>
               <div className="col-auto">
-                <button className="btn btn-lg btn-success" onClick={addTask}>
+                <button
+                  className="btn btn-lg btn-success"
+                  onClick={modalHandler}
+                >
                   Add Task
                 </button>
               </div>
@@ -350,6 +411,13 @@ const StudentView = () => {
               deleteTask={deleteTask}
             />
           </div>
+          {showModal && (
+            <AddTaskModal
+              taskCreationHandler={taskCreationHandler}
+              isVisible={showModal}
+              onClose={() => setShowModal(false)}
+            />
+          )}
         </div>
       </div>
     </>

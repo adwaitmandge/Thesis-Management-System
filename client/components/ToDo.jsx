@@ -27,13 +27,33 @@ const ToDo = ({ toDo, markDone, updateTask, deleteTask }) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
 
+  const getMonth = (num) => {
+    if (num == 1) return "Jan";
+
+    if (num == 2) return "Feb";
+    if (num == 3) return "Mar";
+    if (num == 4) return "Apr";
+    if (num == 5) return "May";
+    if (num == 6) return "Jun";
+    if (num == 7) return "Jul";
+    if (num == 8) return "Aug";
+    if (num == 9) return "Sep";
+    if (num == 10) return "Oct";
+    if (num == 11) return "Nov";
+    if (num == 12) return "Dec";
+  };
+
   const { user } = ChatState();
   console.log(user);
   console.log(toDo);
   return (
     <>
-      {toDo.map((task, index) => {
+      {toDo?.map((task, index) => {
         const { isCompleted, creator } = task;
+        const date = task?.deadline?.slice(0, 10);
+        const monthNum = task?.deadline?.slice(5, 7);
+        const month = getMonth(monthNum);
+        const day = task?.deadline?.slice(8, 10);
         console.log("Is user._id === creator", user._id === creator);
         return (
           <React.Fragment key={task._id}>
@@ -80,6 +100,9 @@ const ToDo = ({ toDo, markDone, updateTask, deleteTask }) => {
                     <FontAwesomeIcon icon={faTrashCan} />
                   </Button>
                 )}
+                <span className="font-bold text-sm">
+                  Due {`${day} ${month}`}
+                </span>
               </div>
             </div>
 

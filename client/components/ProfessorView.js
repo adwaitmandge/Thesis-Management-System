@@ -30,16 +30,19 @@ const ProfessorView = () => {
     }
   };
 
-  const taskCreationHandler = async (task, student) => {
-    if (!task.task) {
+  const taskCreationHandler = async (newTask, student) => {
+    if (!newTask.task) {
       console.log("Cannot assign an empty task");
       return;
     }
 
+    const id = student._id;
     const body = {
-      task,
-      student,
+      newTask,
+      id,
     };
+
+    console.log(body);
 
     console.log("Before sending post request");
     const res = await fetch("http://localhost:5000/api/professor/", {
@@ -54,6 +57,9 @@ const ProfessorView = () => {
     console.log("After sending post request");
     const data = await res.json();
     console.log(data);
+
+    setShowModal(false);
+    setSelectedStudent({});
   };
 
   const modalHandler = (student) => {
@@ -68,20 +74,18 @@ const ProfessorView = () => {
   return (
     <>
       <div className="flex flex-wrap">
-        {students.map((student) => {
-          const randomNum = Math.floor(Math.random() * 4) + 1;
+        {students.map((student, index) => {
+          const randomNum = Math.floor(Math.random() * 11) + 1;
           const { _id: id } = student;
           return (
-            <div
-              class="max-w-[300px] rounded overflow-hidden shadow-lg m-3 cursor-pointer"
-              onClick={() => {
-                router.push(`professor/${id}`);
-              }}
-            >
+            <div class="max-w-[300px] rounded overflow-hidden shadow-lg m-3 cursor-pointer">
               <img
                 class="w-full h-[50%]"
-                src={`http://localhost:8080/img${randomNum}.jpg`}
+                src={`http://localhost:8080/img${index + 1}.jpg`}
                 alt="Sunset in the mountains"
+                onClick={() => {
+                  router.push(`professor/${id}`);
+                }}
               />
               <div class="px-6 py-4">
                 <div class="font-bold text-xl mb-2">{student.name}</div>
@@ -89,7 +93,10 @@ const ProfessorView = () => {
                 <button
                   type="button"
                   class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-                  onClick={() => modalHandler(student)}
+                  onClick={(e) => {
+                    modalHandler(student);
+                    e.stopPropagation();
+                  }}
                 >
                   Assign Task
                 </button>

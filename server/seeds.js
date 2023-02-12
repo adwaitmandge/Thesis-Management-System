@@ -11,15 +11,6 @@ mongoose
     console.log(err);
   });
 
-const addStudent = async () => {
-  const professor = await User.findOne({ email: "khedkar@ce.vjti.ac.in" });
-  const student = await User.findOne({ name: "Siddhesh Singh Tanwar" });
-  console.log(professor);
-  console.log(student);
-  student.professor.push(professor);
-  await student.save();
-};
-
 const addGoal = async () => {
   const professor = await User.findOne({ email: "shingade@vjti.ac.in" });
   const student = await User.findOne({ name: "Kunal Goudani" });
@@ -46,13 +37,11 @@ const updateUser = async () => {
 };
 
 const populateStudents = async () => {
-  const kunal = await User.findOne({ name: "Kunal Goudani" });
-  const pranav = await User.findOne({ name: "Pranav Janjani" });
+  const om = await User.findOne({ name: "Om Doiphode" });
   const shinghade = await User.findOne({ name: "Sandeep Shinghade" });
-  shinghade.students.push(kunal._id);
-  shinghade.students.push(pranav._id);
+  shinghade.students.push(om._id);
   console.log(shinghade);
   await shinghade.save();
 };
 
-addGoal();
+populateStudents();
