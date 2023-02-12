@@ -3,6 +3,7 @@ const User = require("../models/userModel.js");
 const asyncHandler = require("express-async-handler");
 
 const protect = asyncHandler(async (req, res, next) => {
+  console.log("Inside the auth middleware");
   let token;
   if (
     req.headers.authorization &&
@@ -10,7 +11,6 @@ const protect = asyncHandler(async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
-
       //decodes token id
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 

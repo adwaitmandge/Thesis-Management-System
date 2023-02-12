@@ -1,14 +1,18 @@
 import { supabase } from "../config/supabaseClient";
 import react, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useToast } from "@chakra-ui/react";
+import { Link, useToast } from "@chakra-ui/react";
+import { ChatState } from "../Context/ChatProvider";
 
 const uploads = () => {
+  const { user } = ChatState();
+  console.log(user);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [bucketData, setBucketData] = useState([]);
   const router = useRouter();
   const toast = useToast();
 
+  console.log(bucketData);
   const handleUpload = async (e) => {
     let file;
     if (e.target.files) {
@@ -17,7 +21,7 @@ const uploads = () => {
 
     const { data, error } = await supabase.storage
       .from("thesis")
-      .upload("public/" + file?.name, file);
+      .upload(`${user.name}/` + file?.name, file);
 
     if (data) {
       console.log(data);
@@ -35,7 +39,10 @@ const uploads = () => {
         `http://localhost:5000/api/uploads?fileName=${fileName}`,
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
         }
       );
 
@@ -61,37 +68,37 @@ const uploads = () => {
   const getFromBucket = async () => {
     const { data, error } = await supabase.storage
       .from("thesis")
-      .list("public", {
+      .list(`${user?.name}`, {
         limit: 100,
         offset: 0,
         sortBy: { column: "name", order: "asc" },
       });
 
-    setBucketData(data);
     console.log(data);
+    setBucketData(data);
   };
 
   useEffect(() => {
     getFromBucket();
-  }, []);
+  }, [user]);
 
   //   className="flex min-h-scree flex-col items-center justify-center py-2 "
   return (
     <>
       <div className="w-[50%] mx-auto">
         <div class="max-w-sm p-6 text-center bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
-          <a href="#">
+          <span >
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               Create New Projects
             </h5>
-          </a>
+          </span>
           <p class="mb-3 font-normal text-gray-700 dark:text-gray-400"></p>
-          <a
+          <Link
             href="https://docs.google.com/document/d/1CHfflA9XCz2EdkV-qukilgAEBdxg0l_DYOBaCEptfgI/edit"
             class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
             Add New
-          </a>
+          </Link>
         </div>
       </div>
       <div className="mt-[3%]">

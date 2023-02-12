@@ -319,21 +319,6 @@ const StudentView = () => {
             <br />
             <br />
 
-            {/* {updateData && updateData ? (
-              <UpdateForm
-                updateData={updateData}
-                changeTask={changeTask}
-                updateTask={updateTask}
-                cancelUpdate={cancelUpdate}
-              />
-            ) : (
-              <AddTaskForm
-                newTask={newTask}
-                setNewTask={setNewTask}
-                addTask={addTask}
-              />
-            )} */}
-
             {/* Adding a Task  */}
             <div className="row">
               <div className="col">

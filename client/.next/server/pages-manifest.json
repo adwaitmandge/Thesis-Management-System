@@ -2,6 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/dashboard": "pages/dashboard.js",
-  "/profile": "pages/profile.js"
+  "/professor/[id]": "pages/professor/[id].js",
+  "/": "pages/index.js",
+  "/auth": "pages/auth.js",
+  "/dashboard": "pages/dashboard.js"
 }

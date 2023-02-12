@@ -9,6 +9,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const professorRoutes = require('./routes/professorRoutes');
 
 const { default: mongoose } = require("mongoose");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -31,6 +32,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/professor", professorRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

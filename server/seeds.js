@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Goal = require("./models/goalModel");
 const User = require("./models/userModel");
 
 mongoose
@@ -22,19 +21,17 @@ const addStudent = async () => {
 };
 
 const addGoal = async () => {
-  const professor = await User.findOne({ email: "khedkar@ce.vjti.ac.in" });
-  const student = await User.findOne({ name: "Om Doiphode" });
+  const professor = await User.findOne({ email: "shingade@vjti.ac.in" });
+  const student = await User.findOne({ name: "Kunal Goudani" });
   console.log(professor);
-  const newGoal = new Goal({
-    task: "Design a circuit board",
+  const newGoal = {
+    task: "Attend all lectures",
     isCompleted: false,
-    deadline: new Date("2023-02-12"),
-  });
+    deadline: new Date("2023-02-14"),
+  };
   newGoal.creator = professor;
-  newGoal.assigned_to.push(student);
-
+  newGoal.assigned_to = student;
   student.goals.push(newGoal);
-  await newGoal.save();
   await student.save();
 };
 
@@ -42,10 +39,20 @@ const deleteUser = async () => {
   const user = await User.findOneAndDelete({ name: "Om Doiphode" });
 };
 
-const updateUser = async() => {
-  const user = await User.findOne({name:"Om Doiphode"});
+const updateUser = async () => {
+  const user = await User.findOne({ name: "Kunal Goudani" });
   user.goals = [];
   await user.save();
-}
+};
 
-updateUser();
+const populateStudents = async () => {
+  const kunal = await User.findOne({ name: "Kunal Goudani" });
+  const pranav = await User.findOne({ name: "Pranav Janjani" });
+  const shinghade = await User.findOne({ name: "Sandeep Shinghade" });
+  shinghade.students.push(kunal._id);
+  shinghade.students.push(pranav._id);
+  console.log(shinghade);
+  await shinghade.save();
+};
+
+addGoal();

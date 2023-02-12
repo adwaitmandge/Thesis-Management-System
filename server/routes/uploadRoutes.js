@@ -2,8 +2,9 @@ const express = require("express");
 const supabase = require("../config/supabaseClient");
 const router = express.Router();
 const fs = require("fs");
+const { protect } = require("../middleware/authMiddleware");
 
-router.get("/", async (req, res) => {
+router.get("/", protect, async (req, res) => {
   console.log("Inside download files at the frontend");
 
   const { fileName } = req.query;
@@ -11,11 +12,14 @@ router.get("/", async (req, res) => {
   console.log(req.query);
   const { data, error } = await supabase.storage
     .from("thesis")
-    .download(`public/${fileName}`);
+    .download(`${req.user.name}/${fileName}`);
 
   const blob = data;
   const buffer = Buffer.from(await blob.arrayBuffer());
-  fs.promises.writeFile(fileName, buffer);
+  fs.promises.writeFile(
+    `C:/Users/Adwait/Downloads/hackathon-front-main/server/files/${fileName}`,
+    buffer
+  );
 
   console.log("File has been parsed");
   res.json("SUCCESS");

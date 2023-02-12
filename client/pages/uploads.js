@@ -15,7 +15,7 @@ const uploads = () => {
 
     const { data, error } = await supabase.storage
       .from("thesis")
-      .upload("public/" + file?.name, file);
+      .upload(`${user.name}/` + file?.name, file);
 
     if (data) {
       console.log(data);
@@ -38,10 +38,10 @@ const uploads = () => {
 
   const downloadFiles = async (fileName) => {
     console.log("Inside download files");
-    
+
     const { data, error } = await supabase.storage
       .from("thesis")
-      .download(`public/${fileName}`);
+      .download(`${user.name}/${fileName}`);
   };
 
   const getFiles = async (req, res) => {
