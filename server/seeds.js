@@ -44,4 +44,10 @@ const populateStudents = async () => {
   await shinghade.save();
 };
 
-populateStudents();
+const removeThesis = async () => {
+  const shinghade = await User.findOne({ name: "Sandeep Shinghade" });
+  shinghade.thesis = [];
+  await shinghade.save();
+};
+
+removeThesis();

@@ -1,36 +1,88 @@
-import { supabase } from "../config/supabaseClient";
 import react, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Link, useToast } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
+import UploadModal from "../components/miscellaneous/UploadModal";
+import { supabase } from "../config/supabaseClient";
 
 const uploads = () => {
   const { user } = ChatState();
-  console.log(user);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [bucketData, setBucketData] = useState([]);
   const router = useRouter();
   const toast = useToast();
+  const [showModal, setShowModal] = useState(false);
+  const [allThesis, setAllThesis] = useState([]);
+  const [thesis, setThesis] = useState({
+    title: "",
+    professor: "",
+    student: "",
+    path: "",
+    status: "",
+  });
 
-  console.log(bucketData);
+  const downloadThesis = () => {};
+
   const handleUpload = async (e) => {
     let file;
     if (e.target.files) {
       file = e.target.files[0];
     }
 
-    const { data, error } = await supabase.storage
-      .from("thesis")
-      .upload(`${user.name}/` + file?.name, file);
+    console.log("Inside upload at the frontend");
+    // empty title
+    if (!thesis.title || !thesis.professor) {
+      console.log("Thesis title and professor cannot be empty");
+    }
 
-    if (data) {
-      console.log(data);
-    } else if (error) {
+    try {
+      const { data, error } = await supabase.storage
+        .from("thesis")
+        .upload(`${user.name}/` + thesis.title, file);
+
+      if (data) {
+        console.log(data);
+        toast({
+          title: "File Uploaded Successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        console.log("File Uploaded to Supabase Successfully");
+      } else if (error) {
+        console.log(error);
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/api/thesis/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(thesis),
+        });
+
+        const data = await res.json();
+        console.log(data);
+        setAllThesis(data);
+        console.log("Thesis uploaded at the backend successfully");
+      } catch (err) {
+        console.error(err.message);
+      }
+    } catch (error) {
       console.log(error);
     }
   };
 
-  const downloadFiles = async (fileName) => {
+  const feedbackHandler = (id) => {
+    router.push(`/thesis/feedback/${id}`);
+  };
+
+  const statusHandler = () => {};
+
+  const downloadFiles = async (fileName, path) => {
+    console.log("The filename is ", fileName, "The path is", path);
     try {
       console.log("Inside download files at the frontend");
       console.log("About to send a get request");
@@ -42,6 +94,7 @@ const uploads = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
+            path: path,
           },
         }
       );
@@ -78,59 +131,117 @@ const uploads = () => {
     setBucketData(data);
   };
 
+  const getDataFromBackend = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/thesis", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setAllThesis(data);
+    } catch (err) {
+      console.log("Error occurred while getting data from the backend");
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
-    getFromBucket();
+    getDataFromBackend();
   }, [user]);
 
   //   className="flex min-h-scree flex-col items-center justify-center py-2 "
   return (
     <>
-      <div className="w-[50%] mx-auto">
-        <div class="max-w-sm p-6 text-center bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
-          <span >
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Create New Projects
-            </h5>
-          </span>
-          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400"></p>
-          <Link
-            href="https://docs.google.com/document/d/1CHfflA9XCz2EdkV-qukilgAEBdxg0l_DYOBaCEptfgI/edit"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-          >
-            Add New
-          </Link>
-        </div>
-      </div>
-      <div className="mt-[3%]">
-        <hr />
-      </div>
-      <div className="flex  flex-col items-center justify-center py-2">
-        <input type="file" className="" onChange={handleUpload} />
-      </div>
-      <div className="mt-[0.5%]">
-        <hr />
-      </div>
-      <div>
-        {bucketData?.map((data) => {
-          console.log("Mapping", data.name);
-          return (
-            <div className="bg-gray-300 w-[100%] m-auto h-[50%] rounded-full mt-[10px] mb-[10px]">
-              <div className="h-full">
-                <div key={data.id} className="flex justify-center py-3">
-                  <button
-                    onClick={() => downloadFiles(data.name)}
-                    className="text-black"
+      <div class="relative flex justify-center items-center overflow-x-auto rounded overflow-hidden shadow-lg m-3 mt-10 cursor-pointer">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                Thesis Name
+              </th>
+              <th scope="col" class="px-6 py-3">
+                student
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Professor
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Status
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Review
+              </th>
+              <th scope="col" class="px-6 py-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {allThesis?.map((data) => {
+              console.log("The thesis is", data);
+              return (
+                <tr
+                  key={data._id}
+                  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                >
+                  <th
+                    scope="row"
+                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {data.name}{" "}
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+                    <span onClick={() => downloadFiles(data.title, data.path)}>
+                      {data.title}
+                    </span>
+                  </th>
+                  <td class="px-6 py-4">{data?.creator_student?.name}</td>
+                  <td class="px-6 py-4">{data?.professor?.name}</td>
+                  <td class="px-6 py-4">{data.status}</td>
+                  <td
+                    class="px-6 py-4"
+                    onClick={() => feedbackHandler(data._id)}
+                  >
+                    {user.role == "Student" ? "View Feedback" : "Send Feedback"}
+                  </td>
+                  <td
+                    class="px-6 py-4 text-blue-600 hover:text-blue-800"
+                    onClick={statusHandler}
+                  >
+                    Edit
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
+      <div className="mt-[3%] flex justify-center">
+        <hr />
+        <button
+          type="button"
+          className=" text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2 justify-center"
+          onClick={(e) => {
+            setShowModal(true);
+          }}
+        >
+          Upload Thesis
+        </button>
+      </div>
+      {showModal && (
+        <UploadModal
+          isVisible={showModal}
+          thesis={thesis}
+          setThesis={setThesis}
+          handleUpload={handleUpload}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </>
   );
 };
 
 export default uploads;
+{
+  /*  */
+}

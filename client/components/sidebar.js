@@ -1,8 +1,10 @@
 import React from "react";
 import { useRouter } from "next/router";
+import { ChatState } from "../Context/ChatProvider";
 
 function sidebar() {
   const router = useRouter();
+  const { user } = ChatState();
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
@@ -42,7 +44,7 @@ function sidebar() {
                 href="/chats"
                 className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-white hover:bg-green-700 hover:rounded-full"
               >
-                <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
+                <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400 no-underline">
                   <i className="hover:text-white bx bx-chat"></i>
                 </span>
                 <span className="text-xl font-medium">Chat</span>
@@ -50,7 +52,11 @@ function sidebar() {
             </li>
             <li>
               <a
-                href="/myprojects"
+                href={`${
+                  user?.role == "Student"
+                    ? "/myprojects"
+                    : "/professor/myprojects"
+                }`}
                 className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-white hover:bg-green-700 hover:rounded-full"
               >
                 <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
@@ -67,7 +73,12 @@ function sidebar() {
                 <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
                   <i className="hover:text-white bx bx-user"></i>
                 </span>
-                <button onClick={() => router.push('/profile')} className="text-xl font-medium">Profile</button>
+                <button
+                  onClick={() => router.push("/profile")}
+                  className="text-xl font-medium"
+                >
+                  Profile
+                </button>
               </a>
             </li>
             <li>
@@ -83,7 +94,8 @@ function sidebar() {
             </li>
             <li>
               <a
-                href="#" onClick={logoutHandler}
+                href="#"
+                onClick={logoutHandler}
                 className="flex flex-row items-center h-12 transform hover:translate-x-4 transition-transform ease-in duration-200 text-gray-500 hover:text-white hover:bg-green-700 hover:rounded-full"
               >
                 <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">

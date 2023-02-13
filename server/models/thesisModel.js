@@ -7,14 +7,16 @@ const thesisSchema = new mongoose.Schema(
       require: true,
     },
     professor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
+      // type: mongoose.Schema.Types.ObjectId,
+      // ref: "User",
     },
     creator_student: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      // type: mongoose.Schema.Types.ObjectId,
+      // ref: "User",
+      type: String,
     },
-    pending: Boolean,
+    status: "String",
     path: {
       type: String,
     },

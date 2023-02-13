@@ -37,8 +37,24 @@ const userSchema = new mongoose.Schema(
     },
     thesis: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Thesis",
+        title: {
+          type: String,
+          require: true,
+        },
+        professor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        creator_student: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        status: {
+          type: String,
+        },
+        path: {
+          type: String,
+        },
       },
     ],
     students: [
@@ -73,6 +89,36 @@ const userSchema = new mongoose.Schema(
         deadline: {
           type: Date,
         },
+      },
+    ],
+    thesis: [
+      {
+        title: {
+          type: String,
+          require: true,
+        },
+        professor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        creator_student: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        status: "String",
+        path: {
+          type: String,
+        },
+        feedback: [
+          {
+            title: {
+              type: String,
+            },
+            body: {
+              type: String,
+            },
+          },
+        ],
       },
     ],
   },

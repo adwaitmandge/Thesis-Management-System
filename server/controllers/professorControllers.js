@@ -63,10 +63,62 @@ const deleteGoal = asyncHandler(async (req, res) => {
   res.json(foundUser.goals);
 });
 
+const getThesis = asyncHandler(async (req, res) => {
+  try {
+    const allUsers = await User.find({
+      "thesis.professor": req.user._id,
+    })
+      .populate("thesis.professor")
+      .populate("thesis.creator_student");
+
+    const allThesis = [];
+
+    console.log(allUsers);
+    for (let user of allUsers) {
+      for (let individualThesis of user.thesis) {
+        if (individualThesis.professor.name == req.user.name) {
+          allThesis.push(individualThesis);
+        }
+      }
+    }
+
+    res.json(allThesis);
+
+    console.log("After for loop", allThesis);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+const postFeedback = asyncHandler(async (req, res) => {
+  try {
+    console.log("Inside the postfeedback route at the backend");
+    console.log("The request body is", req.body);
+    const { id: thesisId, feedback } = req.body;
+    const foundUser = await User.findOne({ "thesis._id": thesisId });
+    console.log("The foundUser is  ", foundUser);
+    const foundThesis = foundUser.thesis.find(
+      (thesis) => thesis._id == thesisId
+    );
+
+    console.log("The foundThesis is", foundThesis);
+    foundThesis.feedback.push(feedback);
+    console.log("Found User before saving is", foundUser);
+    await foundUser.save();
+    console.log("Found User after saving is", foundUser);
+    res.json("FEEDBACK POSTED")
+  } catch (error) {
+    console.log("Error occurred while posting at backend");
+    console.log(error);
+  }
+});
+
 module.exports = {
   assignTask,
   fetchStudents,
   getGoals,
   updateGoal,
   deleteGoal,
+  getThesis,
+  postFeedback,
 };
