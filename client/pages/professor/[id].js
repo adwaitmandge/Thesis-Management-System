@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useRouter } from "next/router";
 import { calcLength } from "framer-motion";
 import { ChatState } from "../../Context/ChatProvider";
+import AddTaskModal from "../../components/miscellaneous/AddTaskModal";
 
 const StudentView = () => {
   const { user } = ChatState();
@@ -24,6 +25,7 @@ const StudentView = () => {
   const [personalTasks, setPersonalTasks] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
   const [personalCount, setPersonalCount] = useState(0);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   // Temp State
   const [newTask, setNewTask] = useState({
     task: "",
@@ -84,61 +86,50 @@ const StudentView = () => {
 
   //////////////////////////////// ADD TASK /////////////////////////////////////////////////////
 
-  const addTask = async () => {
+  const taskCreationHandler = async (newTask, id) => {
     if (!newTask.task) {
-      toast({
-        title: "Cannot assign an empty task",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      console.log("Task is empty ");
+      console.log("Cannot assign an empty task");
       return;
     }
-    console.log("NEW TASK BEFORE ADDING CREATOR", newTask);
-    console.log("NEW TASK AFTER ADDING CREATOR", newTask);
-    const num = Math.floor(Math.random() * 25) + 1;
-    newTask.deadline = `2023-02-${num}`;
 
     const body = {
       newTask,
       id,
     };
 
-    try {
-      const res = await fetch("http://localhost:5000/api/professor", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify(body),
-      });
+    console.log(body);
 
-      const data = await res.json();
-      const temp = [...toDo, data];
+    console.log("Before sending post request");
+    const res = await fetch("http://localhost:5000/api/professor/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+      body: JSON.stringify(body),
+    });
 
-      console.log("NEW GOAL ADDED");
-      setToDo([...toDo, data]);
-      setAssignedTasks([...assignedTasks, data]);
-      setNewTask({
-        task: "",
-        isCompleted: false,
-        deadline: "",
-      });
+    console.log("After sending post request");
+    const data = await res.json();
+    console.log(data);
 
-      toast({
-        title: "New Task Added",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-    } catch (error) {
-      console.log("Error occurred while creating a task");
-      console.log(error);
-    }
+    setToDo(data);
+
+    const temp1 = [];
+    const temp2 = [];
+    data.map((task) => {
+      if (task.assigned_to == task.creator) {
+        temp1.push(task);
+      } else {
+        temp2.push(task);
+      }
+    });
+
+    console.log(temp2);
+    calculateAssignedProgress(temp2);
+    setAssignedTasks(temp2);
+
+    setShowAddTaskModal(false);
   };
 
   //////////////////////////////// UDPATE TASK /////////////////////////////////////////////////////
@@ -155,7 +146,7 @@ const StudentView = () => {
       return;
     }
 
-    const body = { task, newTitle, id, date, time };  
+    const body = { task, newTitle, id, date, time };
 
     try {
       const res = await fetch("http://localhost:5000/api/professor/", {
@@ -271,7 +262,12 @@ const StudentView = () => {
                 />
               </div>
               <div className="col-auto">
-                <button className="btn btn-lg btn-success" onClick={addTask}>
+                <button
+                  className="btn btn-lg btn-success"
+                  onClick={() => {
+                    setShowAddTaskModal(true);
+                  }}
+                >
                   Add Task
                 </button>
               </div>
@@ -288,6 +284,14 @@ const StudentView = () => {
               deleteTask={deleteTask}
             />
           </div>
+          {showAddTaskModal && (
+            <AddTaskModal
+              student={id}
+              taskCreationHandler={taskCreationHandler}
+              isVisible={showAddTaskModal}
+              onClose={() => setShowAddTaskModal(false)}
+            />
+          )}
         </div>
       </div>
     </>

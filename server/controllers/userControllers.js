@@ -6,7 +6,6 @@ const generateToken = require("../config/generateToken");
 //@route           GET /api/user?search=
 //@access          Public
 const allUsers = asyncHandler(async (req, res) => {
-  console.log("Inside get all users at the backend");
   const keyword = req.query.search
     ? {
         $or: [

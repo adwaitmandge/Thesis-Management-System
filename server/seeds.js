@@ -26,8 +26,11 @@ const addGoal = async () => {
   await student.save();
 };
 
-const deleteUser = async () => {
-  const user = await User.findOneAndDelete({ name: "Om Doiphode" });
+const deleteGoal = async () => {
+  const user = await User.findOne({ name: "Kunal Goudani" });
+  const newGoals = user.goals.filter((goal) => goal.task != "Horse Riding");
+  user.goals = newGoals;
+  await user.save();
 };
 
 const updateUser = async () => {
@@ -57,4 +60,4 @@ const removeThesis = async () => {
   await kunal.save();
 };
 
-removeThesis();
+deleteGoal();

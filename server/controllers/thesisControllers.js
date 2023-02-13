@@ -47,14 +47,11 @@ const fetchFeedback = asyncHandler(async (req, res) => {
 
 const changeStatus = asyncHandler(async (req, res) => {
   try {
-    console.log("Inside changeStatus at the backend");
-    console.log(req.body);
     const { newStatus, id } = req.body;
     const foundUser = await User.findById(req.user._id)
       .populate("thesis.professor")
       .populate("thesis.creator_student");
     const foundThesis = foundUser.thesis.find((thesis) => thesis._id == id);
-    console.log("The foundThesis is", foundThesis);
     foundThesis.status = newStatus;
     await foundUser.save();
     res.json(foundUser.thesis);

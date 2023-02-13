@@ -139,7 +139,7 @@ const StudentView = () => {
     const temp1 = [];
     const temp2 = [];
     data.map((task) => {
-      if (task.assigned_to.includes(task.creator)) {
+      if (task.assigned_to == task.creator) {
         temp1.push(task);
       } else {
         temp2.push(task);

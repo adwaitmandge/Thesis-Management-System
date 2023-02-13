@@ -57,7 +57,7 @@ const ProfessorView = () => {
     console.log("After sending post request");
     const data = await res.json();
     console.log(data);
-
+    
     setShowModal(false);
     setSelectedStudent({});
   };
