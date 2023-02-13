@@ -45,9 +45,16 @@ const populateStudents = async () => {
 };
 
 const removeThesis = async () => {
-  const shinghade = await User.findOne({ name: "Sandeep Shinghade" });
-  shinghade.thesis = [];
-  await shinghade.save();
+  const kunal = await User.findOne({
+    "thesis.title": "Data Interpretation And Analysis",
+  });
+
+  const newThesis = kunal.thesis.filter(
+    (someThesis) => someThesis.title != "Data Interpretation And Analysis"
+  );
+  console.log(newThesis);
+  kunal.thesis = newThesis;
+  await kunal.save();
 };
 
 removeThesis();

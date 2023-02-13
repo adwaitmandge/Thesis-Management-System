@@ -1,12 +1,15 @@
 import { useState } from "react";
 
-const AddTaskModal = ({ isVisible, onClose, taskCreationHandler, student }) => {
-  const [newTask, setNewTask] = useState({
-    task: "",
-    date: "",
-    time: "",
-  });
-
+const EditModal = ({
+  isVisible,
+  onClose,
+  thesis,
+  statusHandler,
+  editHandler,
+}) => {
+  console.log(thesis);
+  if (!isVisible) return null;
+  const [newStatus, setNewStatus] = useState("");
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center ">
@@ -52,50 +55,29 @@ const AddTaskModal = ({ isVisible, onClose, taskCreationHandler, student }) => {
                 ></path>
               </svg>
               <h3 class="mb-2 text-lg font-normal text-gray-500 dark:text-gray-400">
-                Assign Task
+                Edit Thesis
               </h3>
               <div className="mt-[10px] mb-[20px]">
                 <input
                   type="text"
                   id="first_name"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Assign New Task"
-                  value={newTask.task}
-                  onChange={(e) =>
-                    setNewTask({ ...newTask, task: e.target.value })
-                  }
+                  placeholder="Change status"
                   required
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
                 />
-                <input
-                  type="date"
-                  id="first_name"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white mt-3 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Set a deadline"
-                  onChange={(e) => {
-                    setNewTask({ ...newTask, date: e.target.value });
-                    console.log(newTask);
-                  }}
-                  required
-                />
-                <input
-                  type="time"
-                  id="first_name"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white mt-3 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Set a deadline"
-                  onChange={(e) => {
-                    setNewTask({ ...newTask, time: e.target.value });
-                    console.log(newTask);
-                  }}
-                  required
-                />
+                <div className="flex  flex-col items-center justify-center py-2">
+                  <input type="file" className="mt-3" onChange={editHandler} />
+                </div>
               </div>
               <button
                 data-modal-hide="popup-modal"
                 type="button"
                 class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-                onClick={() => taskCreationHandler(newTask)}
+                onClick={() => statusHandler(thesis._id, newStatus)}
               >
-                Assign
+                Update
               </button>
               <button
                 data-modal-hide="popup-modal"
@@ -115,4 +97,4 @@ const AddTaskModal = ({ isVisible, onClose, taskCreationHandler, student }) => {
   );
 };
 
-export default AddTaskModal;
+export default EditModal;

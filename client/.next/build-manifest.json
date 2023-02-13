@@ -25,20 +25,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/chats": [
+    "/myprojects": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/chats.js"
-    ],
-    "/dashboard": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/dashboard.js"
-    ],
-    "/profile": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/profile.js"
+      "static/chunks/pages/myprojects.js"
     ]
   },
   "ampFirstPages": []

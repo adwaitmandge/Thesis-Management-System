@@ -3,15 +3,19 @@ import { useRouter } from "next/router";
 import { Link, useToast } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 import UploadModal from "../components/miscellaneous/UploadModal";
+import EditModal from "../components/miscellaneous/EditModal";
 import { supabase } from "../config/supabaseClient";
 
 const uploads = () => {
   const { user } = ChatState();
-  const [bucketData, setBucketData] = useState([]);
+
   const router = useRouter();
   const toast = useToast();
+
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [allThesis, setAllThesis] = useState([]);
+  const [selectedThesis, setSelectedThesis] = useState({});
   const [thesis, setThesis] = useState({
     title: "",
     professor: "",
@@ -20,7 +24,74 @@ const uploads = () => {
     status: "",
   });
 
-  const downloadThesis = () => {};
+  const editHandler = async (e) => {
+    let file;
+    if (e.target.files) {
+      file = e.target.files[0];
+    }
+
+    console.log("Inside edit at the frontend");
+    // empty title
+    try {
+      const { data, error } = await supabase.storage
+        .from("thesis")
+        .update(`${user.name}/` + selectedThesis.title, file);
+
+      if (data) {
+        console.log(data);
+        toast({
+          title: "File Uploaded Successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        console.log("File Updated at Supabase Successfully");
+      } else if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const statusHandler = async (id, newStatus) => {
+    if (!newStatus) {
+      console.log("Please fill the status");
+      return;
+    }
+
+    const body = {
+      newStatus,
+      id,
+    };
+    console.log("The new status is", newStatus);
+
+    try {
+      console.log("About to send a put request");
+
+      const res = await fetch("http://localhost:5000/api/thesis/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      setAllThesis(data);
+      console.log("After the put request");
+      console.log("After editing status at the frontend");
+      setSelectedThesis({});
+      setShowEditModal(false);
+    } catch (error) {
+      console.log("Error occurred while updating status at the frontend");
+      console.log(error);
+    }
+  };
 
   const handleUpload = async (e) => {
     let file;
@@ -79,8 +150,6 @@ const uploads = () => {
     router.push(`/thesis/feedback/${id}`);
   };
 
-  const statusHandler = () => {};
-
   const downloadFiles = async (fileName, path) => {
     console.log("The filename is ", fileName, "The path is", path);
     try {
@@ -118,19 +187,6 @@ const uploads = () => {
     }
   };
 
-  const getFromBucket = async () => {
-    const { data, error } = await supabase.storage
-      .from("thesis")
-      .list(`${user?.name}`, {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" },
-      });
-
-    console.log(data);
-    setBucketData(data);
-  };
-
   const getDataFromBackend = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/thesis", {
@@ -157,6 +213,9 @@ const uploads = () => {
   //   className="flex min-h-scree flex-col items-center justify-center py-2 "
   return (
     <>
+      <h1 className="flex justify-start m-3 text-2xl font-semibold text-blue-800">
+        Digital Thesis Repository
+      </h1>
       <div class="relative flex justify-center items-center overflow-x-auto rounded overflow-hidden shadow-lg m-3 mt-10 cursor-pointer">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -206,10 +265,22 @@ const uploads = () => {
                   </td>
                   <td
                     class="px-6 py-4 text-blue-600 hover:text-blue-800"
-                    onClick={statusHandler}
+                    onClick={() => {
+                      setSelectedThesis(data);
+                      setShowEditModal(true);
+                    }}
                   >
                     Edit
                   </td>
+                  {showEditModal && (
+                    <EditModal
+                      isVisible={showEditModal}
+                      thesis={selectedThesis}
+                      editHandler={editHandler}
+                      statusHandler={statusHandler}
+                      onClose={() => setShowEditModal(false)}
+                    />
+                  )}
                 </tr>
               );
             })}
@@ -242,6 +313,3 @@ const uploads = () => {
 };
 
 export default uploads;
-{
-  /*  */
-}
