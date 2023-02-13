@@ -47,7 +47,7 @@ const uploads = () => {
         }
       );
 
-      const data = await res.json()
+      const data = await res.json();
       setShowFeedbackModal(false);
       setSelectedThesis({});
     } catch (err) {
@@ -55,11 +55,8 @@ const uploads = () => {
     }
   };
 
-  const downloadThesis = () => {};
-
-  const statusHandler = () => {};
-
-  const downloadFiles = async (fileName) => {
+  const downloadFiles = async (fileName, path) => {
+    console.log("The filename is ", fileName, "The path is", path);
     try {
       console.log("Inside download files at the frontend");
       console.log("About to send a get request");
@@ -71,6 +68,7 @@ const uploads = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
+            path: path,
           },
         }
       );
@@ -120,6 +118,9 @@ const uploads = () => {
   //   className="flex min-h-scree flex-col items-center justify-center py-2 "
   return (
     <>
+      <h1 className="flex justify-start m-3 text-2xl font-semibold text-blue-800">
+        Digital Thesis Repository
+      </h1>
       <div class="relative flex justify-center items-center overflow-x-auto rounded overflow-hidden shadow-lg m-3 mt-10 cursor-pointer">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -154,7 +155,13 @@ const uploads = () => {
                     scope="row"
                     class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    <span onClick={downloadThesis}>{data.title}</span>
+                    <span
+                      onClick={() => {
+                        downloadFiles(data.title, data.path);
+                      }}
+                    >
+                      {data.title}
+                    </span>
                   </th>
                   <td class="px-6 py-4">{data?.creator_student?.name}</td>
                   <td class="px-6 py-4">{data?.professor?.name}</td>
@@ -167,12 +174,6 @@ const uploads = () => {
                     }}
                   >
                     {user.role == "Student" ? "View Feedback" : "Send Feedback"}
-                  </td>
-                  <td
-                    class="px-6 py-4 text-blue-600 hover:text-blue-800"
-                    onClick={statusHandler}
-                  >
-                    Edit
                   </td>
                 </tr>
               );

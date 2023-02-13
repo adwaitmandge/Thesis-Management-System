@@ -2,6 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/dashboard": "pages/dashboard.js",
-  "/professor/[id]": "pages/professor/[id].js"
+  "/professor/myprojects": "pages/professor/myprojects.js",
+  "/thesis/feedback/[id]": "pages/thesis/feedback/[id].js",
+  "/myprojects": "pages/myprojects.js"
 }

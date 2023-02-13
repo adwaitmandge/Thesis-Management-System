@@ -3,7 +3,8 @@ const User = require("../models/userModel");
 
 const compare = (a, b) => {
   if (a.deadline < b.deadline) return -1;
-  else return 1;
+  if (a.deadline > b.deadline) return 1;
+  return 0;
 };
 
 const assignTask = asyncHandler(async (req, res) => {

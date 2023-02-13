@@ -25,15 +25,20 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/dashboard": [
+    "/myprojects": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/dashboard.js"
+      "static/chunks/pages/myprojects.js"
     ],
-    "/professor/[id]": [
+    "/professor/myprojects": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/professor/[id].js"
+      "static/chunks/pages/professor/myprojects.js"
+    ],
+    "/thesis/feedback/[id]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/thesis/feedback/[id].js"
     ]
   },
   "ampFirstPages": []

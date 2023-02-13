@@ -46,9 +46,9 @@ const Feedback = () => {
     <div className="m-2">
       {allFeedbacks?.map((feedback) => {
         return (
-          <a
+          <span
             href="#"
-            class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+            class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow my-2 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
           >
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               {feedback.title}
@@ -56,7 +56,7 @@ const Feedback = () => {
             <p class="font-normal text-gray-700 dark:text-gray-400">
               {feedback.body}
             </p>
-          </a>
+          </span>
         );
       })}
     </div>

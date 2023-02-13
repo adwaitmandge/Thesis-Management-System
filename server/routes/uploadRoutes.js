@@ -6,7 +6,6 @@ const supabase = require("../config/supabaseClient");
 
 router.get("/", protect, async (req, res) => {
   console.log("Inside download files at the frontend");
-
   console.log(req.header("path"));
   const { fileName } = req.query;
   console.log("filename is ", fileName);
